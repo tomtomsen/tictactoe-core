@@ -1,9 +1,5 @@
 package tomtomsen.tictactoe.core;
 
-/**
- * Created by olmolmsen on 28.02.2017.
- */
-
 public class Game {
     private Board board;
     private Player[] players;
