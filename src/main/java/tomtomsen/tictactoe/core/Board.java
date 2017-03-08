@@ -1,5 +1,8 @@
 package tomtomsen.tictactoe.core;
 
+import tomtomsen.tictactoe.core.exception.OutOfBoundsException;
+import tomtomsen.tictactoe.core.exception.FieldBlockedException;
+
 /**
  * Represents a tic tac toe board
  *
@@ -11,7 +14,7 @@ public class Board {
   /**
    * a list of all fields
    */
-  private Piece[] board;
+  private static Piece[] fields;
   /**
    * A board is three by three squares long
    */
@@ -25,9 +28,9 @@ public class Board {
    * Creates a board intance
    */
   public Board() {
-    board = new Piece[FIELDCOUNT];
+    fields = new Piece[FIELDCOUNT];
     for (int i = 0; i < FIELDCOUNT; i ++) {
-      board[i] = Piece.NONE;
+      fields[i] = Piece.NONE;
     }
   }
 
@@ -37,15 +40,17 @@ public class Board {
    * @param  piece   Piece to be placed
    * @param  col     Column
    * @param  row     Row
-   *
-   * @throws Exception If a piece has already been placed at that position
+   * @throws OutOfBoundsException  If given position is not on the board
+   * @throws FieldBlockedException If given position is blocked by a piece
    */
-  public void placePiece(Piece piece, int col, int row) throws Exception {
+  public void placePiece(final Piece piece, final int col, final int row)
+    throws OutOfBoundsException, FieldBlockedException {
+
     if (Piece.NONE != pieceAt(col, row)) {
-      throw new Exception("already placed " + pieceAt(col, row));
+      throw new FieldBlockedException(pieceAt(col, row));
     }
 
-    board[calcPos(col, row)] = piece;
+    fields[calcPos(col, row)] = piece;
   }
 
   /**
@@ -53,14 +58,16 @@ public class Board {
    *
    * @return true if board is empty, otherwise false
    */
-  public boolean isEmpty() throws Exception {
-    for (int i = 0; i < FIELDCOUNT; i ++) {
+  public boolean isEmpty() throws OutOfBoundsException {
+    boolean pieceFound = false;
+
+    for (int i = 0; i < FIELDCOUNT && !pieceFound; i ++) {
       if (hasPieceAt(calcCol(i), calcRow(i))) {
-        return false;
+        pieceFound = true;
       }
     }
 
-    return true;
+    return pieceFound;
   }
 
   /**
@@ -68,45 +75,43 @@ public class Board {
    *
    * @return true if there is no empty field left, otherwise false
    */
-  public boolean isFull() throws Exception {
-    for (int i = 0; i < FIELDCOUNT; i ++) {
+  public boolean isFull() throws OutOfBoundsException {
+    boolean emptyFieldFound = false;
+
+    for (int i = 0; i < FIELDCOUNT && !emptyFieldFound; i ++) {
       if (!hasPieceAt(calcCol(i), calcRow(i))) {
-        return false;
+        emptyFieldFound = true;
       }
     }
 
-    return true;
+    return emptyFieldFound;
   }
 
   /**
    * Returns the Piece at the given position
    *
-   * @param  col       Column number
-   * @param  row       Row number
-   *
-   * @return           Piece at the given position
-   *
-   * @throws Exception thrown if the given position is not on the board
+   * @param  col                  Column number
+   * @param  row                  Row number
+   * @return                      Piece at the given position
+   * @throws OutOfBoundsException thrown if the given position is not on the board
    */
-  public Piece pieceAt(int col, int row) throws Exception {
+  public Piece pieceAt(final int col, final int row) throws OutOfBoundsException {
     if (isOutOfBounds(col, row)) {
-      throw new Exception("out of bounds");
+      throw new OutOfBoundsException();
     }
 
-    return board[calcPos(col, row)];
+    return fields[calcPos(col, row)];
   }
 
   /**
    * Checks if a piece is located at the given position
    *
-   * @param  col       Column number
-   * @param  row       Row number
-   *
-   * @return           true if a piece is located at the given position, otherwise false
-   *
-   * @throws Exception thrown if the given position is not on the board
+   * @param  col                  Column number
+   * @param  row                  Row number
+   * @return                      true if a piece is located at the given position, otherwise false
+   * @throws OutOfBoundsException thrown if the given position is not on the board
    */
-  public boolean hasPieceAt(int col, int row) throws Exception {
+  public boolean hasPieceAt(final int col, final int row) throws OutOfBoundsException {
     return Piece.NONE != pieceAt(col, row);
   }
 
@@ -115,33 +120,30 @@ public class Board {
    *
    * @param  col Column number
    * @param  row Row number
-   *
    * @return     true if the given position is on the board, otherwise false
    */
-  public boolean isOutOfBounds(int col, int row) {
-    return (col < 0 || col >= BOARDLENGTH || row < 0 || row >= BOARDLENGTH);
+  public boolean isOutOfBounds(final int col, final int row) {
+    return col < 0 || col >= BOARDLENGTH || row < 0 || row >= BOARDLENGTH;
   }
 
   /**
    * Calculates the column number
    *
-   * @param  i board index
-   *
-   * @return   the column number
+   * @param  index board index
+   * @return       the column number
    */
-  private int calcCol(int i) {
-    return i % BOARDLENGTH;
+  private int calcCol(final int index) {
+    return index % BOARDLENGTH;
   }
 
   /**
    * Calculates the row number
    *
-   * @param  i board index
-   *
-   * @return   the row number
+   * @param  index board index
+   * @return       the row number
    */
-  private int calcRow(int i) {
-    return (int) i / BOARDLENGTH;
+  private int calcRow(final int index) {
+    return (int) index / BOARDLENGTH;
   }
 
   /**
@@ -149,10 +151,9 @@ public class Board {
    *
    * @param  col Column number
    * @param  row Row number
-   *
    * @return     board index
    */
-  private int calcPos(int col, int row) {
+  private int calcPos(final int col, final int row) {
     return col + row * BOARDLENGTH;
   }
 }
