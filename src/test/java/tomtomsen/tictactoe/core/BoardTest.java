@@ -73,7 +73,7 @@ public class BoardTest {
     public void PlaceAndRetrievePiece() throws Exception {
         Board board = new Board();
 
-        assertEquals(Piece.NONE, board.pieceAt(0, 0));
+        assertEquals(null, board.pieceAt(0, 0));
         board.placePiece(Piece.CROSS, 0, 0);
 
         assertEquals(Piece.CROSS, board.pieceAt(0, 0));

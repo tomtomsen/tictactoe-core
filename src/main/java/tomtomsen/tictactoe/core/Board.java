@@ -14,7 +14,7 @@ public class Board {
   /**
    * a list of all fields
    */
-  private static Piece[] fields;
+  private Piece[] fields;
   /**
    * A board is three by three squares long
    */
@@ -29,9 +29,6 @@ public class Board {
    */
   public Board() {
     fields = new Piece[FIELDCOUNT];
-    for (int i = 0; i < FIELDCOUNT; i ++) {
-      fields[i] = Piece.NONE;
-    }
   }
 
   /**
@@ -46,7 +43,7 @@ public class Board {
   public void placePiece(final Piece piece, final int col, final int row)
     throws OutOfBoundsException, FieldBlockedException {
 
-    if (Piece.NONE != pieceAt(col, row)) {
+    if (null != pieceAt(col, row)) {
       throw new FieldBlockedException(pieceAt(col, row));
     }
 
@@ -67,7 +64,7 @@ public class Board {
       }
     }
 
-    return pieceFound;
+    return !pieceFound;
   }
 
   /**
@@ -84,7 +81,7 @@ public class Board {
       }
     }
 
-    return emptyFieldFound;
+    return !emptyFieldFound;
   }
 
   /**
@@ -112,7 +109,7 @@ public class Board {
    * @throws OutOfBoundsException thrown if the given position is not on the board
    */
   public boolean hasPieceAt(final int col, final int row) throws OutOfBoundsException {
-    return Piece.NONE != pieceAt(col, row);
+    return null != pieceAt(col, row);
   }
 
   /**
