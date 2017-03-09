@@ -1,73 +1,149 @@
 package tomtomsen.tictactoe.core;
 
+import tomtomsen.tictactoe.core.exception.OutOfBoundsException;
+
+/**
+ * Game logic
+ */
 public class Game {
-    private Board board;
-    private Player[] players;
-    private Piece[] pieces = {Piece.CIRCLE, Piece.CROSS};
-    private Player winner;
-    private Renderer renderer;
+  /**
+   * Board
+   */
+  private final Board board;
+  /**
+   * Players
+   */
+  private final Player[] players;
+  /**
+   * Pieces
+   */
+  private final Piece[] pieces = {Piece.CIRCLE, Piece.CROSS};
+  /**
+   * Winner
+   */
+  private Player winner;
+  /**
+   * Renderer
+   */
+  private final Renderer renderer;
 
-    public Game(Player player1, Player player2, Board board, Renderer renderer) {
-        players = new Player[2];
-        players[0] = player1;
-        players[1] = player2;
+  /**
+   * Initializes the Game
+   *
+   * @param  player1  [description]
+   * @param  player2  [description]
+   * @param  board  [description]
+   * @param  renderer [description]
+   */
+  public Game(
+      final Player player1,
+      final Player player2,
+      final Board board,
+      final Renderer renderer) {
+    players = new Player[2];
+    players[0] = player1;
+    players[1] = player2;
 
-        this.board = board;
-        this.renderer = renderer;
+    this.board = board;
+    this.renderer = renderer;
+  }
+
+  /**
+   * Returns the current board
+   *
+   * @return current board
+   */
+  public Board getBoard() {
+    return board;
+  }
+
+  /**
+   * Runs the game
+   */
+  public void run() throws OutOfBoundsException {
+    int currentPlayer = 0;
+    while (!board.isFull()) {
+      if (players[currentPlayer].giveUp()) {
+        declareWinner(players[(currentPlayer + 1) % 2]);
+        break;
+      }
+
+      final int[] move = players[currentPlayer].makeMove(board, pieces[currentPlayer]);
+      if (board.isOutOfBounds(move[0], move[1]) || board.hasPieceAt(move[0], move[1])) {
+        continue;
+      }
+
+      board.placePiece(pieces[currentPlayer], move[0], move[1]);
+      renderer.update(this);
+
+      if (winningCondition()) {
+        declareWinner(players[currentPlayer]);
+        break;
+      }
+
+      currentPlayer = ++currentPlayer % 2;
     }
 
-    public Board getBoard() {
-        return board;
-    }
+    renderer.gameEnded(this);
+  }
 
-    public void run() throws Exception {
-        int currentPlayer = 0;
-        while (!board.isFull()) {
-            if (players[currentPlayer].giveUp()) {
-                declareWinner(players[(currentPlayer+1) % 2]);
-                break;
-            }
+  /**
+   * Checks if there are three pieces in a row
+   *
+   * @return true if the game should end
+   */
+  protected boolean winningCondition() throws OutOfBoundsException {
+    return board.hasPieceAt(0, 0)
+            && board.pieceAt(0, 0) == board.pieceAt(0, 1)
+            && board.pieceAt(0, 1) == board.pieceAt(0, 2)
+        || board.hasPieceAt(1, 0)
+            && board.pieceAt(1, 0) == board.pieceAt(1, 1)
+            && board.pieceAt(1, 1) == board.pieceAt(2, 2)
+        || board.hasPieceAt(2, 0)
+            && board.pieceAt(2, 0) == board.pieceAt(2, 1)
+            && board.pieceAt(2, 1) == board.pieceAt(2, 2)
+        || board.hasPieceAt(0, 0)
+            && board.pieceAt(0, 0) == board.pieceAt(1, 0)
+            && board.pieceAt(1, 0) == board.pieceAt(2, 0)
+        || board.hasPieceAt(0, 1)
+            && board.pieceAt(0, 1) == board.pieceAt(1, 1)
+            && board.pieceAt(1, 1) == board.pieceAt(2, 1)
+        || board.hasPieceAt(0, 2)
+            && board.pieceAt(0, 2) == board.pieceAt(1, 2)
+            && board.pieceAt(1, 2) == board.pieceAt(2, 2)
+        || board.hasPieceAt(0, 0)
+            && board.pieceAt(0, 0) == board.pieceAt(1, 1)
+            && board.pieceAt(1, 1) == board.pieceAt(2, 2)
+        || board.hasPieceAt(0, 2)
+            && board.pieceAt(0, 2) == board.pieceAt(1, 1)
+            && board.pieceAt(1, 1) == board.pieceAt(2, 0)
+        ;
+  }
 
-            int[] move = players[currentPlayer].makeMove(board, pieces[currentPlayer]);
-            if (board.hasPieceAt(move[0], move[1])) {
-                continue;
-            }
+  /**
+   * Declares a player to be the winner
+   *
+   * @param player winning player
+   */
+  protected void declareWinner(final Player player) {
+    winner = player;
+  }
 
-            board.placePiece(pieces[currentPlayer], move[0], move[1]);
-            renderer.update(this);
+  /**
+   * Returns the winner
+   *
+   * @return winner
+   */
+  public Player getWinner() {
+    return winner;
+  }
 
-            if (winningCondition()) {
-                declareWinner(players[currentPlayer]);
-                break;
-            }
-
-            currentPlayer = (++currentPlayer % 2);
-        }
-
-        renderer.gameEnded(this);
-    }
-
-    protected boolean winningCondition() throws Exception {
-        return (board.hasPieceAt(0, 0) && board.pieceAt(0, 0) == board.pieceAt(0, 1) && board.pieceAt(0, 1) == board.pieceAt(0, 2))
-                || (board.hasPieceAt(1, 0) && board.pieceAt(1, 0) == board.pieceAt(1, 1) && board.pieceAt(1, 1) == board.pieceAt(2, 2))
-                || (board.hasPieceAt(2, 0) && board.pieceAt(2, 0) == board.pieceAt(2, 1) && board.pieceAt(2, 1) == board.pieceAt(2, 2))
-                || (board.hasPieceAt(0, 0) && board.pieceAt(0, 0) == board.pieceAt(1, 0) && board.pieceAt(1, 0) == board.pieceAt(2, 0))
-                || (board.hasPieceAt(0, 1) && board.pieceAt(0, 1) == board.pieceAt(1, 1) && board.pieceAt(1, 1) == board.pieceAt(2, 1))
-                || (board.hasPieceAt(0, 2) && board.pieceAt(0, 2) == board.pieceAt(1, 2) && board.pieceAt(1, 2) == board.pieceAt(2, 2))
-                || (board.hasPieceAt(0, 0) && board.pieceAt(0, 0) == board.pieceAt(1, 1) && board.pieceAt(1, 1) == board.pieceAt(2, 2))
-                || (board.hasPieceAt(0, 2) && board.pieceAt(0, 2) == board.pieceAt(1, 1) && board.pieceAt(1, 1) == board.pieceAt(2, 0))
-                ;
-    }
-
-    protected void declareWinner(Player player) {
-        winner = player;
-    }
-
-    public Player getWinner() {
-        return winner;
-    }
-
-    public boolean isDraw() {
-        return winner == null;
-    }
+  /**
+   * Returns if game is in draw
+   *
+   * @return true if game is draw, otherwise false
+   */
+  public boolean isDraw() {
+    return winner == null;
+  }
 }

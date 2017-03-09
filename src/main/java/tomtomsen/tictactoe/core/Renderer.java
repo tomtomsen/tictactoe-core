@@ -1,6 +1,19 @@
 package tomtomsen.tictactoe.core;
 
+/**
+ * Renderer
+ */
 public interface Renderer {
-    public void update(Game game);
-    public void gameEnded(Game game);
+  /**
+   * Called if game gets updated
+   *
+   * @param game Game
+   */
+  void update(Game game);
+  /**
+    * Gets called if game has ended
+    *
+    * @param game Game
+    */
+  void gameEnded(Game game);
 }
