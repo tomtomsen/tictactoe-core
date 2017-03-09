@@ -2,4 +2,4 @@
 
 ## Todos
 - [ ] reduce method parameter count
-- [ ] introduce Position/Location class
+- [x] introduce Position/Location class

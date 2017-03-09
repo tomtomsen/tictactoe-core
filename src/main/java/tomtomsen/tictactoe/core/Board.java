@@ -40,14 +40,14 @@ public class Board {
    * @throws OutOfBoundsException  If given position is not on the board
    * @throws FieldBlockedException If given position is blocked by a piece
    */
-  public void placePiece(final Piece piece, final int col, final int row)
+  public void placePiece(final Piece piece, final Location location)
     throws OutOfBoundsException, FieldBlockedException {
 
-    if (null != pieceAt(col, row)) {
-      throw new FieldBlockedException(pieceAt(col, row));
+    if (null != pieceAt(location)) {
+      throw new FieldBlockedException(pieceAt(location));
     }
 
-    fields[calcPos(col, row)] = piece;
+    fields[calcPos(location)] = piece;
   }
 
   /**
@@ -59,7 +59,7 @@ public class Board {
     boolean pieceFound = false;
 
     for (int i = 0; i < FIELDCOUNT && !pieceFound; i ++) {
-      if (hasPieceAt(calcCol(i), calcRow(i))) {
+      if (hasPieceAt(calcLocation(i))) {
         pieceFound = true;
       }
     }
@@ -76,7 +76,7 @@ public class Board {
     boolean emptyFieldFound = false;
 
     for (int i = 0; i < FIELDCOUNT && !emptyFieldFound; i ++) {
-      if (!hasPieceAt(calcCol(i), calcRow(i))) {
+      if (!hasPieceAt(calcLocation(i))) {
         emptyFieldFound = true;
       }
     }
@@ -92,12 +92,12 @@ public class Board {
    * @return                      Piece at the given position
    * @throws OutOfBoundsException thrown if the given position is not on the board
    */
-  public Piece pieceAt(final int col, final int row) throws OutOfBoundsException {
-    if (isOutOfBounds(col, row)) {
+  public Piece pieceAt(final Location location) throws OutOfBoundsException {
+    if (isOutOfBounds(location)) {
       throw new OutOfBoundsException();
     }
 
-    return fields[calcPos(col, row)];
+    return fields[calcPos(location)];
   }
 
   /**
@@ -108,8 +108,8 @@ public class Board {
    * @return                      true if a piece is located at the given position, otherwise false
    * @throws OutOfBoundsException thrown if the given position is not on the board
    */
-  public boolean hasPieceAt(final int col, final int row) throws OutOfBoundsException {
-    return null != pieceAt(col, row);
+  public boolean hasPieceAt(final Location location) throws OutOfBoundsException {
+    return null != pieceAt(location);
   }
 
   /**
@@ -119,28 +119,15 @@ public class Board {
    * @param  row Row number
    * @return     true if the given position is on the board, otherwise false
    */
-  public boolean isOutOfBounds(final int col, final int row) {
+  public boolean isOutOfBounds(final Location location) {
+    final int col = location.getColumn();
+    final int row = location.getRow();
+
     return col < 0 || col >= BOARDLENGTH || row < 0 || row >= BOARDLENGTH;
   }
 
-  /**
-   * Calculates the column number
-   *
-   * @param  index board index
-   * @return       the column number
-   */
-  private int calcCol(final int index) {
-    return index % BOARDLENGTH;
-  }
-
-  /**
-   * Calculates the row number
-   *
-   * @param  index board index
-   * @return       the row number
-   */
-  private int calcRow(final int index) {
-    return (int) index / BOARDLENGTH;
+  private Location calcLocation(final int index) {
+    return new Location(index % BOARDLENGTH, (int) index / BOARDLENGTH);
   }
 
   /**
@@ -150,7 +137,7 @@ public class Board {
    * @param  row Row number
    * @return     board index
    */
-  private int calcPos(final int col, final int row) {
-    return col + row * BOARDLENGTH;
+  private int calcPos(final Location location) {
+    return location.getColumn() + location.getRow() * BOARDLENGTH;
   }
 }

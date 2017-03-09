@@ -9,11 +9,11 @@ public interface Renderer {
    *
    * @param game Game
    */
-  void update(Game game);
+  void update(final Game game);
   /**
     * Gets called if game has ended
     *
     * @param game Game
     */
-  void gameEnded(Game game);
+  void gameEnded(final Game game);
 }

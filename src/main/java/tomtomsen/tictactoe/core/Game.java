@@ -17,7 +17,7 @@ public class Game {
   /**
    * Pieces
    */
-  private final Piece[] pieces = {Piece.CIRCLE, Piece.CROSS};
+  private final Piece[] pieces = {Piece.CROSS, Piece.CIRCLE};
   /**
    * Winner
    */
@@ -42,7 +42,10 @@ public class Game {
       final Renderer renderer) {
     players = new Player[2];
     players[0] = player1;
+    players[0].assignPiece(pieces[0]);
+
     players[1] = player2;
+    players[1].assignPiece(pieces[1]);
 
     this.board = board;
     this.renderer = renderer;
@@ -68,12 +71,12 @@ public class Game {
         break;
       }
 
-      final int[] move = players[currentPlayer].makeMove(board, pieces[currentPlayer]);
-      if (board.isOutOfBounds(move[0], move[1]) || board.hasPieceAt(move[0], move[1])) {
+      final Location location = players[currentPlayer].makeMove(board);
+      if (board.isOutOfBounds(location) || board.hasPieceAt(location)) {
         continue;
       }
 
-      board.placePiece(pieces[currentPlayer], move[0], move[1]);
+      board.placePiece(pieces[currentPlayer], location);
       renderer.update(this);
 
       if (winningCondition()) {
@@ -93,30 +96,30 @@ public class Game {
    * @return true if the game should end
    */
   protected boolean winningCondition() throws OutOfBoundsException {
-    return board.hasPieceAt(0, 0)
-            && board.pieceAt(0, 0) == board.pieceAt(0, 1)
-            && board.pieceAt(0, 1) == board.pieceAt(0, 2)
-        || board.hasPieceAt(1, 0)
-            && board.pieceAt(1, 0) == board.pieceAt(1, 1)
-            && board.pieceAt(1, 1) == board.pieceAt(2, 2)
-        || board.hasPieceAt(2, 0)
-            && board.pieceAt(2, 0) == board.pieceAt(2, 1)
-            && board.pieceAt(2, 1) == board.pieceAt(2, 2)
-        || board.hasPieceAt(0, 0)
-            && board.pieceAt(0, 0) == board.pieceAt(1, 0)
-            && board.pieceAt(1, 0) == board.pieceAt(2, 0)
-        || board.hasPieceAt(0, 1)
-            && board.pieceAt(0, 1) == board.pieceAt(1, 1)
-            && board.pieceAt(1, 1) == board.pieceAt(2, 1)
-        || board.hasPieceAt(0, 2)
-            && board.pieceAt(0, 2) == board.pieceAt(1, 2)
-            && board.pieceAt(1, 2) == board.pieceAt(2, 2)
-        || board.hasPieceAt(0, 0)
-            && board.pieceAt(0, 0) == board.pieceAt(1, 1)
-            && board.pieceAt(1, 1) == board.pieceAt(2, 2)
-        || board.hasPieceAt(0, 2)
-            && board.pieceAt(0, 2) == board.pieceAt(1, 1)
-            && board.pieceAt(1, 1) == board.pieceAt(2, 0)
+    return board.hasPieceAt(new Location(0, 0))
+            && board.pieceAt(new Location(0, 0)) == board.pieceAt(new Location(0, 1))
+            && board.pieceAt(new Location(0, 1)) == board.pieceAt(new Location(0, 2))
+        || board.hasPieceAt(new Location(1, 0))
+            && board.pieceAt(new Location(1, 0)) == board.pieceAt(new Location(1, 1))
+            && board.pieceAt(new Location(1, 1)) == board.pieceAt(new Location(2, 2))
+        || board.hasPieceAt(new Location(2, 0))
+            && board.pieceAt(new Location(2, 0)) == board.pieceAt(new Location(2, 1))
+            && board.pieceAt(new Location(2, 1)) == board.pieceAt(new Location(2, 2))
+        || board.hasPieceAt(new Location(0, 0))
+            && board.pieceAt(new Location(0, 0)) == board.pieceAt(new Location(1, 0))
+            && board.pieceAt(new Location(1, 0)) == board.pieceAt(new Location(2, 0))
+        || board.hasPieceAt(new Location(0, 1))
+            && board.pieceAt(new Location(0, 1)) == board.pieceAt(new Location(1, 1))
+            && board.pieceAt(new Location(1, 1)) == board.pieceAt(new Location(2, 1))
+        || board.hasPieceAt(new Location(0, 2))
+            && board.pieceAt(new Location(0, 2)) == board.pieceAt(new Location(1, 2))
+            && board.pieceAt(new Location(1, 2)) == board.pieceAt(new Location(2, 2))
+        || board.hasPieceAt(new Location(0, 0))
+            && board.pieceAt(new Location(0, 0)) == board.pieceAt(new Location(1, 1))
+            && board.pieceAt(new Location(1, 1)) == board.pieceAt(new Location(2, 2))
+        || board.hasPieceAt(new Location(0, 2))
+            && board.pieceAt(new Location(0, 2)) == board.pieceAt(new Location(1, 1))
+            && board.pieceAt(new Location(1, 1)) == board.pieceAt(new Location(2, 0))
         ;
   }
 

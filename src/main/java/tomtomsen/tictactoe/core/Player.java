@@ -12,12 +12,12 @@ public interface Player {
    *
    * @return           position on baord
    */
-  int[] makeMove(Board board, Piece yourPiece);
+  Location makeMove(final Board board);
   /**
    * Give up
    *
    * @return true if game should end, otherwise false
    */
   boolean giveUp();
-  //void assignPiece(Piece piece);
+  void assignPiece(final Piece piece);
 }
